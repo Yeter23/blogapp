@@ -2,6 +2,7 @@ package com.yeter.blogapp.controllers;
 
 import com.yeter.blogapp.entities.User;
 import com.yeter.blogapp.repositories.UserRepository;
+import com.yeter.blogapp.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,43 +14,37 @@ import java.util.Optional;
 
 public class UserController {
     //reponu tanimlayiriq
-    private UserRepository userRepository;
+    private UserService userService;
     //constructor injection edek
-    public UserController(UserRepository userRepository){
-        this.userRepository=userRepository;
+    public UserController(UserService userService){
+
+        this.userService=userService;
     }
     // butun userleri getiren controller yazaq
     @GetMapping
     public List<User> getAllUsers(){
-       return userRepository.findAll();
+       return userService.getAllUsers();
     }
     //yeni bir user create etmek ucun contrller yazaq
     @PostMapping
     public User createUser(@RequestBody User newUser){
-        return userRepository.save(newUser);
+        return userService.saveOneUser(newUser);
     }
     // tekce bir useri getiren metod yazaq
     @GetMapping("/{userId}")
     public User getOneUser(@PathVariable Long userId){
         //eger hemin user yoxdursa custom excp lazimdi
-       return userRepository.findById(userId).orElse(null) ;
+       return userService.getOneUser(userId) ;
     }
     // deyisiklik update elemek ucun metod
     @PutMapping("/{userId}")
     public User updateOneUser(@PathVariable Long userId,@RequestBody User newUser ){
-      Optional<User> user=userRepository.findById(userId);
-      if(user.isPresent()){
-          User foundUser=user.get();
-          foundUser.setUserName(newUser.getUserName());
-          foundUser.setPassword(newUser.getPassword());
-          userRepository.save(foundUser);
-          return foundUser;
-      } else
-          return null;
+     return userService.updateOneUser(userId,newUser);
     }
     // useri silmek ucun metod
     @DeleteMapping("/{userId}")
     public void deleteOneUser(@PathVariable Long userId){
-        userRepository.deleteById(userId);
+
+        userService.deleteById(userId);
     }
 }
