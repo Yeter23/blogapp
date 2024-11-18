@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public User getOneUser(@PathVariable Long userId){
         //eger hemin user yoxdursa custom excp lazimdi
-       return userService.getOneUser(userId) ;
+       return userService.getOneUserById(userId) ;
     }
     // deyisiklik update elemek ucun metod
     @PutMapping("/{userId}")
