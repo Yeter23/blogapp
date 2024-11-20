@@ -1,10 +1,8 @@
 package com.yeter.blogapp.controllers;
 
-import com.yeter.blogapp.entities.Comment;
 import com.yeter.blogapp.entities.Like;
-import com.yeter.blogapp.requests.CommentCreateRequest;
-import com.yeter.blogapp.requests.CommentUpdateRequest;
 import com.yeter.blogapp.requests.LikeCreateRequest;
+import com.yeter.blogapp.responses.LikeResponse;
 import com.yeter.blogapp.services.LikeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +18,7 @@ public class LikeController {
         this.likeService = likeService;
     }
     @GetMapping
-    public List<Like> getAllLikes(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
+    public List<LikeResponse> getAllLikes(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
         return likeService.getAllLikesWithParam(userId,postId);
 
     }
