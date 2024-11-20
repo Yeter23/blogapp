@@ -12,12 +12,14 @@ import org.hibernate.annotations.OnDeleteAction;
 
 public class Post {
     @Id
+            @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     //postu cagiranda user de gelmesin deye lazy
     @JoinColumn(name = "user_id",nullable = false) // null olmasin bu hisse
     @OnDelete(action = OnDeleteAction.CASCADE) //bir user silinende butun postlar da silinsin
-    @JsonIgnore
+
+
    User user;
     String title;
     @Lob

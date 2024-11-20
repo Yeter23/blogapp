@@ -3,6 +3,7 @@ package com.yeter.blogapp.controllers;
 import com.yeter.blogapp.entities.Post;
 import com.yeter.blogapp.requests.PostCreateRequest;
 import com.yeter.blogapp.requests.PostUpdateRequest;
+import com.yeter.blogapp.responses.PostResponse;
 import com.yeter.blogapp.services.PostService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class PostController {
         this.postService = postService;
     }
     @GetMapping
-    public List<Post> getAllPosts(@RequestParam Optional<Long> userId){
+    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){
        return postService.getAllPosts(userId);
 
     }
