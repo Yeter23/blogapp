@@ -47,6 +47,7 @@ public class UserService {
             User foundUser=user.get();
             foundUser.setUserName(newUser.getUserName());
             foundUser.setPassword(newUser.getPassword());
+
             userRepository.save(foundUser);
             return foundUser;
         } else
@@ -67,8 +68,8 @@ public class UserService {
     List<Long>postIds = postRepository.findTopByUserId(userId);
     if (postIds.isEmpty())
         return null;
-   List<Comment> comments= commentRepository.findUserCommentsByPostId(postIds);
-    List<Like> likes=likeRepository.findUserLikesByPostId(postIds);
+   List<Object> comments= commentRepository.findUserCommentsByPostId(postIds);
+    List<Object> likes=likeRepository.findUserLikesByPostId(postIds);
     // bir liste yigib sonra onlari merge eledik
     List<Object> result= new ArrayList<>();
     result.addAll(comments);

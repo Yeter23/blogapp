@@ -3,6 +3,7 @@ package com.yeter.blogapp.controllers;
 import com.yeter.blogapp.entities.Comment;
 import com.yeter.blogapp.requests.CommentCreateRequest;
 import com.yeter.blogapp.requests.CommentUpdateRequest;
+import com.yeter.blogapp.responses.CommentResponse;
 import com.yeter.blogapp.services.CommentServise;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class CommentControlller {
         this.commentServise = commentServise;
     }
     @GetMapping
-    public List<Comment> getAllComments(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
+    public List<CommentResponse> getAllComments(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
         return commentServise.getAllCommentsWithParam(userId,postId);
 
     }

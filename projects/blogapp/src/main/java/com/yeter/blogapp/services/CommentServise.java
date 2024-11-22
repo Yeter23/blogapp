@@ -6,6 +6,7 @@ import com.yeter.blogapp.entities.User;
 import com.yeter.blogapp.repositories.CommentRepository;
 import com.yeter.blogapp.requests.CommentCreateRequest;
 import com.yeter.blogapp.requests.CommentUpdateRequest;
+import com.yeter.blogapp.responses.CommentResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class CommentServise {
     private CommentRepository commentRepository;
@@ -24,16 +27,17 @@ public class CommentServise {
         this.commentRepository = commentRepository;
     }
 
-    public List<Comment> getAllCommentsWithParam(Optional<Long> userId, Optional<Long> postId) {
+    public List<CommentResponse> getAllCommentsWithParam(Optional<Long> userId, Optional<Long> postId) {
+       List<Comment> comments;
         if(userId.isPresent() && postId.isPresent()){
-          return commentRepository.findByUserIdAndPostId(userId.get(),postId.get());
+        comments= commentRepository.findByUserIdAndPostId(userId.get(),postId.get());
         }else if(userId.isPresent()){
-            return commentRepository.findByUserId(userId.get());
+            comments= commentRepository.findByUserId(userId.get());
         } else if(postId.isPresent()){
-            return commentRepository.findByPostId(postId.get());
+            comments= commentRepository.findByPostId(postId.get());
         } else
-            return commentRepository.findAll();
-
+            comments= commentRepository.findAll();
+return comments.stream().map(comment -> new CommentResponse(comment)).collect(Collectors.toList());
     }
 
 
