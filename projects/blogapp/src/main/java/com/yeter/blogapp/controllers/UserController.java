@@ -6,6 +6,7 @@ import com.yeter.blogapp.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -46,5 +47,11 @@ public class UserController {
     public void deleteOneUser(@PathVariable Long userId){
 
         userService.deleteById(userId);
+    }
+    // burda atdigimiz posta gelen son yorumlar , son likeleri getirmek isteyirik.
+    // ilk 5 i meselen
+    @GetMapping ("/activity/{userId}")
+    public  List<Object> getUserActivity(@PathVariable Long userId){
+      return userService.getUserActivity(userId);
     }
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Date;
+
 @Entity
 @Data
 @Table(name = "comment")
@@ -23,6 +25,7 @@ public class Comment {
 
 
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     // cagiranda user de gelmesin deye lazy
     @JoinColumn(name = "user_id",nullable = false) // null olmasin bu hisse
@@ -32,5 +35,7 @@ public class Comment {
     @Lob
     @Column(columnDefinition = "text")
     String text;
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
 
 }
