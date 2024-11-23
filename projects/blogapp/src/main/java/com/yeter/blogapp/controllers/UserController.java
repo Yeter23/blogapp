@@ -1,9 +1,12 @@
 package com.yeter.blogapp.controllers;
 
 import com.yeter.blogapp.entities.User;
+import com.yeter.blogapp.exceptions.UserNotFoundException;
 import com.yeter.blogapp.repositories.UserRepository;
 import com.yeter.blogapp.responses.UserResponse;
 import com.yeter.blogapp.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +34,22 @@ public class UserController {
     @PostMapping
     public User createUser(@RequestBody User newUser){
         return userService.saveOneUser(newUser);
+
     }
+
     // tekce bir useri getiren metod yazaq
     @GetMapping("/{userId}")
     public UserResponse getOneUser(@PathVariable Long userId){
+        User user=userService.getOneUserById(userId);
+        if (user==null){
+            throw  new UserNotFoundException();
+        }
         //eger hemin user yoxdursa custom excp lazimdi
-       return new UserResponse( userService.getOneUserById(userId)) ;
+       return new UserResponse(user) ;
     }
+
+
+
     // deyisiklik update elemek ucun metod
     @PutMapping("/{userId}")
     public User updateOneUser(@PathVariable Long userId,@RequestBody User newUser ){
@@ -54,5 +66,11 @@ public class UserController {
     @GetMapping ("/activity/{userId}")
     public  List<Object> getUserActivity(@PathVariable Long userId){
       return userService.getUserActivity(userId);
+    }
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+
+    private void  handleUserNotFound(){
+
     }
 }
