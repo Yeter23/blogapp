@@ -16,9 +16,9 @@ public class JwtTokenProvider {
     private  long EXPIRES_IN;   // token nece saniye kecerllidir
     public String genereteJwtToken(Authentication auth){
         JwtUserDetails userDetails=(JwtUserDetails) auth.getPrincipal();
-        Date expiredDate =new Date(new Date().getTime()+EXPIRES_IN);  //indiki vaxtin ustine expires in gelir
+        Date expireDate =new Date(new Date().getTime()+EXPIRES_IN);  //indiki vaxtin ustine expires in gelir
         return Jwts.builder().setSubject(Long.toString(userDetails.getId()))
-                .setIssuedAt(new Date()).setExpiration(expiredDate)
+                .setIssuedAt(new Date()).setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS256,APP_SECRET).compact();
     }
     Long getUserIdFromJwt (String token){
@@ -45,5 +45,13 @@ public class JwtTokenProvider {
     private boolean isTokenExpired(String token) {
         Date expiration = Jwts.parser().setSigningKey(APP_SECRET).build().parseClaimsJws(token).getBody().getExpiration();
         return expiration.before(new Date());
+    }
+
+
+    public String genereteJwtTokenByUserName(Long userId) {
+        Date expireDate =new Date(new Date().getTime()+EXPIRES_IN);
+        return Jwts.builder().setSubject(Long.toString(userId))
+                .setIssuedAt(new Date()).setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS256,APP_SECRET).compact();
     }
 }

@@ -1,9 +1,12 @@
 package com.yeter.blogapp.controllers;
 
+import com.yeter.blogapp.entities.RefreshToken;
 import com.yeter.blogapp.entities.User;
+import com.yeter.blogapp.requests.RefreshRequest;
 import com.yeter.blogapp.requests.UserRequest;
 import com.yeter.blogapp.responses.AuthResponse;
 import com.yeter.blogapp.security.JwtTokenProvider;
+import com.yeter.blogapp.services.RefreshTokenService;
 import com.yeter.blogapp.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
     private UserService userService;
     private PasswordEncoder passwordEncoder;
+    private RefreshTokenService refreshTokenService;
 
     public AuthController(AuthenticationManager authenticationManager,UserService userService,PasswordEncoder passwordEncoder,JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
@@ -41,7 +45,8 @@ public class AuthController {
         String jwtToken=jwtTokenProvider.genereteJwtToken(auth);
         User user =userService.getOneUserByUserName(loginRequest.getUserName());
         AuthResponse authResponse=new AuthResponse();
-        authResponse.setMessage("Bearer"+ jwtToken);
+        authResponse.setAccessToken("Bearer"+ jwtToken);
+        authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         return authResponse;
     }
@@ -58,7 +63,33 @@ public class AuthController {
         user.setUserName(registerRequest.getUserName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userService.saveOneUser(user);
-        authResponse.setMessage("Username artiq var:( ");
-        return new ResponseEntity<>(authResponse,HttpStatus.CREATED);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(registerRequest.getUserName(), registerRequest.getPassword());
+        Authentication auth = authenticationManager.authenticate(authToken);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        String jwtToken = jwtTokenProvider.genereteJwtToken(auth);
+        authResponse.setMessage("User successfully registered.");
+        authResponse.setAccessToken("Bearer " + jwtToken);
+        authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
+        authResponse.setUserId(user.getId());
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse>refresh(@RequestBody RefreshRequest refreshRequest) {
+    AuthResponse response=new AuthResponse();
+      RefreshToken token= refreshTokenService.getByUser(refreshRequest.getUserId());
+if (token.getToken().equals(refreshRequest.getRefreshToken()) && !refreshTokenService.isRefreshExpired(token)){
+    User user=token.getUser();
+
+    String jwtToken=jwtTokenProvider.genereteJwtTokenByUserName(user.getId());
+    response.setMessage("token succesfully refreshed");
+    response.setAccessToken("Bearer " + jwtToken);
+
+    response.setUserId(user.getId());
+    return new ResponseEntity<>(response, HttpStatus.OK);
+
+    } else {
+    response.setMessage("refresh token is not valid");
+    return new ResponseEntity<>(response,HttpStatus.UNAUTHORIZED);
+    }
     }
 }
